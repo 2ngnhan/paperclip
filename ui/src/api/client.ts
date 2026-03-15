@@ -1,4 +1,30 @@
-const BASE = "/api";
+export const getApiUrl = (): string => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const url = (import.meta as any).env?.VITE_API_URL;
+  return typeof url === "string" ? url : "";
+};
+
+export const getWsUrl = (): string => {
+  const apiBase = getApiUrl();
+  let wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+  let wsHost = window.location.host;
+  let wsPath = "";
+  
+  if (apiBase && apiBase.startsWith("http")) {
+    try {
+      const parsed = new URL(apiBase);
+      wsProtocol = parsed.protocol === "https:" ? "wss:" : "ws:";
+      wsHost = parsed.host;
+      wsPath = parsed.pathname === "/" ? "" : parsed.pathname;
+    // eslint-disable-next-line no-empty
+    } catch {}
+  } else if (apiBase && apiBase.startsWith("/")) {
+    wsPath = apiBase;
+  }
+  return `${wsProtocol}//${wsHost}${wsPath}`;
+};
+
+const BASE = `${getApiUrl()}/api`;
 
 export class ApiError extends Error {
   status: number;

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { LiveEvent } from "@paperclipai/shared";
+import type { AgentRuntimeState, HeartbeatRunEvent, LiveEvent } from "@paperclipai/shared";
+import { getWsUrl } from "@/api/client";
 import { heartbeatsApi, type LiveRunForIssue } from "../../api/heartbeats";
 import { buildTranscript, getUIAdapter, type RunLogChunk, type TranscriptEntry } from "../../adapters";
 
@@ -178,8 +179,7 @@ export function useLiveRunTranscripts({
 
     const connect = () => {
       if (closed) return;
-      const protocol = window.location.protocol === "https:" ? "wss" : "ws";
-      const url = `${protocol}://${window.location.host}/api/companies/${encodeURIComponent(companyId)}/events/ws`;
+      const url = `${getWsUrl()}/api/companies/${encodeURIComponent(companyId)}/events/ws`;
       socket = new WebSocket(url);
 
       socket.onmessage = (message) => {
