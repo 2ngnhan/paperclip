@@ -1,8 +1,8 @@
 {
   "id": "/",
-  "name": "Paperclip",
-  "short_name": "Paperclip",
-  "description": "AI-powered project management and agent coordination platform",
+  "name": "n'clerk",
+  "short_name": "n'clerk",
+  "description": "n'clerk is the backbone of the autonomous economy.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

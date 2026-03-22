@@ -131,7 +131,7 @@ export function MarkdownBody({ children, className, resolveImageSrc }: MarkdownB
         return (
           <a
             href={`/projects/${parsed.projectId}`}
-            className="paperclip-project-mention-chip"
+            className="nclerk-project-mention-chip"
             style={mentionChipStyle(parsed.color)}
           >
             {label}

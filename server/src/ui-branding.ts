@@ -1,7 +1,7 @@
-const FAVICON_BLOCK_START = "<!-- PAPERCLIP_FAVICON_START -->";
-const FAVICON_BLOCK_END = "<!-- PAPERCLIP_FAVICON_END -->";
-const RUNTIME_BRANDING_BLOCK_START = "<!-- PAPERCLIP_RUNTIME_BRANDING_START -->";
-const RUNTIME_BRANDING_BLOCK_END = "<!-- PAPERCLIP_RUNTIME_BRANDING_END -->";
+const FAVICON_BLOCK_START = "<!-- NCLERK_FAVICON_START -->";
+const FAVICON_BLOCK_END = "<!-- NCLERK_FAVICON_END -->";
+const RUNTIME_BRANDING_BLOCK_START = "<!-- NCLERK_RUNTIME_BRANDING_START -->";
+const RUNTIME_BRANDING_BLOCK_END = "<!-- NCLERK_RUNTIME_BRANDING_END -->";
 
 const DEFAULT_FAVICON_LINKS = [
   '<link rel="icon" href="/favicon.ico" sizes="48x48" />',
@@ -134,14 +134,14 @@ function createFaviconDataUrl(background: string, foreground: string): string {
   const svg = [
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">',
     `<rect width="24" height="24" rx="6" fill="${background}"/>`,
-    `<path stroke="${foreground}" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="m16 6-8.414 8.586a2 2 0 0 0 2.829 2.829l8.414-8.586a4 4 0 1 0-5.657-5.657l-8.379 8.551a6 6 0 1 0 8.485 8.485l8.379-8.551"/>`,
+    `<path stroke="${foreground}" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>`,
     "</svg>",
   ].join("");
   return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 }
 
 export function isWorktreeUiBrandingEnabled(env: NodeJS.ProcessEnv = process.env): boolean {
-  return isTruthyEnvValue(env.PAPERCLIP_IN_WORKTREE);
+  return isTruthyEnvValue(env.NCLERK_IN_WORKTREE) || isTruthyEnvValue(env.PAPERCLIP_IN_WORKTREE);
 }
 
 export function getWorktreeUiBranding(env: NodeJS.ProcessEnv = process.env): WorktreeUiBranding {
@@ -155,8 +155,8 @@ export function getWorktreeUiBranding(env: NodeJS.ProcessEnv = process.env): Wor
     };
   }
 
-  const name = nonEmpty(env.PAPERCLIP_WORKTREE_NAME) ?? nonEmpty(env.PAPERCLIP_INSTANCE_ID) ?? "worktree";
-  const color = normalizeHexColor(env.PAPERCLIP_WORKTREE_COLOR) ?? deriveColorFromSeed(name);
+  const name = nonEmpty(env.NCLERK_WORKTREE_NAME) ?? nonEmpty(env.PAPERCLIP_WORKTREE_NAME) ?? nonEmpty(env.NCLERK_INSTANCE_ID) ?? nonEmpty(env.PAPERCLIP_INSTANCE_ID) ?? "n'clerk";
+  const color = normalizeHexColor(env.NCLERK_WORKTREE_COLOR) ?? normalizeHexColor(env.PAPERCLIP_WORKTREE_COLOR) ?? deriveColorFromSeed(name);
   const textColor = pickReadableTextColor(color);
 
   return {
@@ -182,10 +182,10 @@ export function renderRuntimeBrandingMeta(branding: WorktreeUiBranding): string 
   if (!branding.enabled || !branding.name || !branding.color || !branding.textColor) return "";
 
   return [
-    '<meta name="paperclip-worktree-enabled" content="true" />',
-    `<meta name="paperclip-worktree-name" content="${escapeHtmlAttribute(branding.name)}" />`,
-    `<meta name="paperclip-worktree-color" content="${escapeHtmlAttribute(branding.color)}" />`,
-    `<meta name="paperclip-worktree-text-color" content="${escapeHtmlAttribute(branding.textColor)}" />`,
+    '<meta name="nclerk-worktree-enabled" content="true" />',
+    `<meta name="nclerk-worktree-name" content="${escapeHtmlAttribute(branding.name)}" />`,
+    `<meta name="nclerk-worktree-color" content="${escapeHtmlAttribute(branding.color)}" />`,
+    `<meta name="nclerk-worktree-text-color" content="${escapeHtmlAttribute(branding.textColor)}" />`,
   ].join("\n");
 }
 
