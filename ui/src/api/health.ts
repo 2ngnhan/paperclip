@@ -1,3 +1,5 @@
+import { api } from "./client";
+
 export type HealthStatus = {
   status: "ok";
   deploymentMode?: "local_trusted" | "authenticated";
@@ -12,14 +14,6 @@ export type HealthStatus = {
 
 export const healthApi = {
   get: async (): Promise<HealthStatus> => {
-    const res = await fetch("/api/health", {
-      credentials: "include",
-      headers: { Accept: "application/json" },
-    });
-    if (!res.ok) {
-      const payload = await res.json().catch(() => null) as { error?: string } | null;
-      throw new Error(payload?.error ?? `Failed to load health (${res.status})`);
-    }
-    return res.json();
+    return api.get<HealthStatus>("/health");
   },
 };
