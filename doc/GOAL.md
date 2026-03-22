@@ -1,6 +1,6 @@
-# Paperclip
+# n'clerk
 
-**Paperclip is the backbone of the autonomous economy.** We are building the infrastructure that autonomous AI companies run on. Our goal is for Paperclip-powered companies to collectively generate economic output that rivals the GDP of the world's largest countries. Every decision we make should serve that: make autonomous companies more capable, more governable, more scalable, and more real.
+**n'clerk is the backbone of the autonomous economy.** We are building the infrastructure that autonomous AI companies run on. Our goal is for n'clerk-powered companies to collectively generate economic output that rivals the GDP of the world's largest countries. Every decision we make should serve that: make autonomous companies more capable, more governable, more scalable, and more real.
 
 ## The Vision
 
@@ -16,7 +16,7 @@ Task management software doesn't go far enough. When your entire workforce is AI
 
 ## What This Is
 
-Paperclip is the command, communication, and control plane for a company of AI agents. It is the single place where you:
+n'clerk is the command, communication, and control plane for a company of AI agents. It is the single place where you:
 
 - **Manage agents as employees** — hire, organize, and track who does what
 - **Define org structure** — org charts that agents themselves operate within

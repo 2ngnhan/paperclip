@@ -1,8 +1,8 @@
-# Paperclip — Product Definition
+# n'clerk — Product Definition
 
 ## What It Is
 
-Paperclip is the control plane for autonomous AI companies. One instance of Paperclip can run multiple companies. A **company** is a first-order object.
+n'clerk is the control plane for autonomous AI companies. One instance of n'clerk can run multiple companies. A **company** is a first-order object.
 
 ## Core Concepts
 
