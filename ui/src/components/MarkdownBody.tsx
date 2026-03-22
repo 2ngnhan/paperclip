@@ -155,7 +155,7 @@ export function MarkdownBody({ children, className, resolveImageSrc }: MarkdownB
   return (
     <div
       className={cn(
-        "paperclip-markdown prose prose-sm max-w-none break-words overflow-hidden",
+        "nclerk-markdown prose prose-sm max-w-none break-words overflow-hidden",
         theme === "dark" && "prose-invert",
         className,
       )}

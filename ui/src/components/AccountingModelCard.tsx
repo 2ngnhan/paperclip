@@ -13,6 +13,8 @@ const SURFACES = [
     title: "Finance ledger",
     description: "Account-level charges that are not one prompt-response pair.",
     icon: ReceiptText,
+    bootstrapPrompt: "Only sent when n'clerk starts a fresh session. Use this for stable setup guidance that should not be repeated on every heartbeat.",
+    payloadTemplateJson: "Optional JSON merged into remote adapter request payloads before n'clerk adds its standard wake and workspace fields.",
     points: ["top-ups, refunds, fees", "Bedrock provisioned or training charges", "credit expiries and adjustments"],
     tone: "from-amber-500/14 via-amber-500/6 to-transparent",
   },
@@ -34,7 +36,7 @@ export function AccountingModelCard() {
           Accounting model
         </CardTitle>
         <CardDescription className="max-w-2xl text-sm leading-6">
-          Paperclip now separates request-level inference usage from account-level finance events.
+          n'clerk now separates request-level inference usage from account-level finance events.
           That keeps provider reporting honest when the biller is OpenRouter, Cloudflare, Bedrock, or another intermediary.
         </CardDescription>
       </CardHeader>

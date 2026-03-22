@@ -647,16 +647,16 @@
   border-color: var(--border);
 }
 
-.paperclip-markdown img {
+.nclerk-markdown img {
   border-radius: calc(var(--radius) + 2px);
   box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--foreground) 10%, transparent);
 }
 
-.paperclip-markdown table {
+.nclerk-markdown table {
   width: 100%;
 }
 
-.paperclip-markdown th {
+.nclerk-markdown th {
   font-weight: 600;
   text-align: left;
 }
