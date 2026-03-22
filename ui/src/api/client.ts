@@ -1,6 +1,6 @@
 export const getApiUrl = (): string => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const url = (import.meta as any).env?.VITE_API_URL;
+  // @ts-expect-error Vite injects env on import.meta
+  const url = import.meta.env.VITE_API_URL;
   return typeof url === "string" ? url : "";
 };
 
@@ -50,15 +50,44 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     credentials: "include",
     ...init,
   });
+
+  const isHtml = res.headers.get("content-type")?.includes("text/html");
+
   if (!res.ok) {
-    const errorBody = await res.json().catch(() => null);
+    const errorBody = isHtml ? await res.text().catch(() => null) : await res.json().catch(() => null);
     throw new ApiError(
-      (errorBody as { error?: string } | null)?.error ?? `Request failed: ${res.status}`,
+      typeof errorBody === "object" && errorBody !== null
+        ? (errorBody as { error?: string })?.error ?? `Request failed: ${res.status}`
+        : `Request failed: ${res.status}`,
       res.status,
       errorBody,
     );
   }
-  return res.json();
+
+  if (isHtml) {
+    const text = await res.text().catch(() => "");
+    throw new ApiError(
+      "Received HTML response instead of JSON. Ensure VITE_API_URL is configured.",
+      res.status,
+      text
+    );
+  }
+
+  const text = await res.text().catch(() => "");
+  if (!text) return {} as T;
+
+  try {
+    return JSON.parse(text);
+  } catch (err) {
+    if (text.trim().startsWith("<")) {
+      throw new ApiError(
+        "Invalid JSON response (suspected HTML payload).",
+        res.status,
+        text
+      );
+    }
+    throw err;
+  }
 }
 
 export const api = {
