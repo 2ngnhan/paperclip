@@ -24,6 +24,20 @@ export const getWsUrl = (): string => {
   return `${wsProtocol}//${wsHost}${wsPath}`;
 };
 
+export type DevServerHealthStatus = {
+  enabled: true;
+  restartRequired: boolean;
+  reason: "backend_changes" | "pending_migrations" | "backend_changes_and_pending_migrations" | null;
+  lastChangedAt: string | null;
+  changedPathCount: number;
+  changedPathsSample: string[];
+  pendingMigrations: string[];
+  autoRestartEnabled: boolean;
+  activeRunCount: number;
+  waitingForIdle: boolean;
+  lastRestartAt: string | null;
+};
+
 const BASE = `${getApiUrl()}/api`;
 
 export class ApiError extends Error {
@@ -63,6 +77,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
       errorBody,
     );
   }
+  if (res.status === 204) return undefined as T;
 
   if (isHtml) {
     const text = await res.text().catch(() => "");

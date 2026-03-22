@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import type { AgentRuntimeState, HeartbeatRunEvent, LiveEvent } from "@paperclipai/shared";
+import { instanceSettingsApi } from "../../api/instanceSettings";
 import { getWsUrl } from "@/api/client";
 import { heartbeatsApi, type LiveRunForIssue } from "../../api/heartbeats";
 import { buildTranscript, getUIAdapter, type RunLogChunk, type TranscriptEntry } from "../../adapters";
+import { queryKeys } from "../../lib/queryKeys";
 
 const LOG_POLL_INTERVAL_MS = 2000;
 const LOG_READ_LIMIT_BYTES = 256_000;
@@ -66,6 +69,10 @@ export function useLiveRunTranscripts({
   const seenChunkKeysRef = useRef(new Set<string>());
   const pendingLogRowsByRunRef = useRef(new Map<string, string>());
   const logOffsetByRunRef = useRef(new Map<string, number>());
+  const { data: generalSettings } = useQuery({
+    queryKey: queryKeys.instance.generalSettings,
+    queryFn: () => instanceSettingsApi.getGeneral(),
+  });
 
   const runById = useMemo(() => new Map(runs.map((run) => [run.id, run])), [runs]);
   const activeRunIds = useMemo(
@@ -267,12 +274,18 @@ export function useLiveRunTranscripts({
 
   const transcriptByRun = useMemo(() => {
     const next = new Map<string, TranscriptEntry[]>();
+    const censorUsernameInLogs = generalSettings?.censorUsernameInLogs === true;
     for (const run of runs) {
       const adapter = getUIAdapter(run.adapterType);
-      next.set(run.id, buildTranscript(chunksByRun.get(run.id) ?? [], adapter.parseStdoutLine));
+      next.set(
+        run.id,
+        buildTranscript(chunksByRun.get(run.id) ?? [], adapter.parseStdoutLine, {
+          censorUsernameInLogs,
+        }),
+      );
     }
     return next;
-  }, [chunksByRun, runs]);
+  }, [chunksByRun, generalSettings?.censorUsernameInLogs, runs]);
 
   return {
     transcriptByRun,

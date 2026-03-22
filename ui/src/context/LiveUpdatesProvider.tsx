@@ -362,6 +362,8 @@ function invalidateActivityQueries(
 
   if (entityType === "issue") {
     queryClient.invalidateQueries({ queryKey: queryKeys.issues.list(companyId) });
+    queryClient.invalidateQueries({ queryKey: queryKeys.issues.listTouchedByMe(companyId) });
+    queryClient.invalidateQueries({ queryKey: queryKeys.issues.listUnreadTouchedByMe(companyId) });
     if (entityId) {
       const details = readRecord(payload.details);
       const issueRefs = resolveIssueQueryRefs(queryClient, companyId, entityId, details);
@@ -414,6 +416,15 @@ function invalidateActivityQueries(
 
   if (entityType === "cost_event") {
     queryClient.invalidateQueries({ queryKey: queryKeys.costs(companyId) });
+    queryClient.invalidateQueries({ queryKey: queryKeys.usageByProvider(companyId) });
+    queryClient.invalidateQueries({ queryKey: queryKeys.usageWindowSpend(companyId) });
+    // usageQuotaWindows is intentionally excluded: quota windows come from external provider
+    // apis on a 5-minute poll and do not change in response to cost events logged by agents
+    return;
+  }
+
+  if (entityType === "routine" || entityType === "routine_trigger" || entityType === "routine_run") {
+    queryClient.invalidateQueries({ queryKey: ["routines"] });
     return;
   }
 
@@ -506,6 +517,10 @@ function handleLiveEvent(
     if (toast) gatedPushToast(gate, pushToast, `activity:${action ?? "unknown"}`, toast);
   }
 }
+
+export const __liveUpdatesTestUtils = {
+  invalidateActivityQueries,
+};
 
 export function LiveUpdatesProvider({ children }: { children: ReactNode }) {
   const { selectedCompanyId } = useCompany();
