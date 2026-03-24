@@ -11,7 +11,9 @@ const DRIZZLE_MIGRATIONS_TABLE = "__drizzle_migrations";
 const MIGRATIONS_JOURNAL_JSON = fileURLToPath(new URL("./migrations/meta/_journal.json", import.meta.url));
 
 function createUtilitySql(url: string) {
-  return postgres(url, { max: 1, onnotice: () => {} });
+  // Disable statement_timeout for migration connections so DDL is never cancelled
+  // by a server-side timeout (e.g. Render's managed Postgres enforces ~30 s by default).
+  return postgres(url, { max: 1, onnotice: () => {}, connection: { statement_timeout: 0 } });
 }
 
 function isSafeIdentifier(value: string): boolean {
@@ -129,6 +131,9 @@ type SqlExecutor = Pick<ReturnType<typeof postgres>, "unsafe">;
 async function runInTransaction(sql: SqlExecutor, action: () => Promise<void>): Promise<void> {
   await sql.unsafe("BEGIN");
   try {
+    // Disable statement_timeout within the transaction as a second layer of defence
+    // against managed Postgres hosts (e.g. Render) that enforce a server-side timeout.
+    await sql.unsafe("SET LOCAL statement_timeout = 0");
     await action();
     await sql.unsafe("COMMIT");
   } catch (error) {
