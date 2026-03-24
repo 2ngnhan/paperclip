@@ -7,7 +7,7 @@ function collectMessageText(message: unknown): string[] {
   }
 
   const record = parseObject(message);
-  const direct = asString(record.text, "").trim();
+  const direct = asString(record.text, "").trim() || asString(record.result, "").trim() || asString(record.response, "").trim() || asString(record.content, "").trim();
   const lines: string[] = direct ? [direct] : [];
   const content = Array.isArray(record.content) ? record.content : [];
 
@@ -163,6 +163,18 @@ export function parseGeminiJsonl(stdout: string) {
     if (type === "step_finish" || event.usage || event.usageMetadata) {
       accumulateUsage(usage, event.usage ?? event.usageMetadata);
       costUsd = asNumber(event.total_cost_usd, asNumber(event.cost_usd, asNumber(event.cost, costUsd ?? 0))) || costUsd;
+      continue;
+    }
+
+    // --- Fallbacks for unknown types or specific missing handlers ---
+    const topLevelText = asString(event.text, "").trim() || asString(event.result, "").trim() || asString(event.response, "").trim();
+    if (topLevelText) {
+      messages.push(topLevelText);
+      continue;
+    }
+
+    if (event.message) {
+      messages.push(...collectMessageText(event.message));
       continue;
     }
   }
